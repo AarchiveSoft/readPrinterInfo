@@ -40,6 +40,7 @@ Damit lässt sich z. B. in einer Fotobox-Software frühzeitig reagieren, wenn da
    ```powershell
    git clone https://github.com/AarchiveSoft/readPrinterInfo.git
    cd readPrinterInfo
+   ```
    
 2. **Virtuelle Umgebung erstellen** (32-bit Python)
 
