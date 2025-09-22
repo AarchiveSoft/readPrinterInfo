@@ -38,49 +38,57 @@ Damit lässt sich z. B. in einer Fotobox-Software frühzeitig reagieren, wenn da
 
 1. **Repository klonen**
    ```powershell
-   git clone https://github.com/deinname/dnp-ds620-remaining-prints.git
-   cd dnp-ds620-remaining-prints
-Virtuelle Umgebung erstellen (32-bit Python)
+   git clone https://github.com/AarchiveSoft/readPrinterInfo.git
+   cd readPrinterInfo
+   
+2. **Virtuelle Umgebung erstellen** (32-bit Python)
 
-powershell
-Copy code
-py -3.11-32 -m venv .venv32
-.\.venv32\Scripts\activate
-Abhängigkeiten installieren
+    ```powershell
+    py -3.11-32 -m venv .venv32
+    .\.venv32\Scripts\activate
+    ```
 
-powershell
-Copy code
-pip install -r requirements.txt
-DLL bereitstellen
+3. **Abhängigkeiten installieren**
 
-Kopiere CspStat.dll aus deinem PrinterInfo-Installationsordner (z. B. C:\DNPIA\PrinterInfo\CspStat.dll)
+    ```powershell
+    pip install -r requirements.txt
+    ```
 
-Lege die Datei in den Ordner ./data/ des Projekts
+4. **DLL bereitstellen**
 
-Nutzung
-powershell
-Copy code
-python .\src\read_ds620_remaining.py
-Erwartete Ausgabe (Beispiel):
 
-yaml
-Copy code
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Kopiere **CspStat.dll** aus deinem PrinterInfo-Installationsordner (z. B. **C:\DNPIA\PrinterInfo\CspStat.dll**)
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lege die Datei in den Ordner ./data/ des Projekts
+
+## Nutzung
+
+```powershell
+python .\main.py
+```
+
+**Erwartete Ausgabe** (Beispiel):
+
+```
 Vendor port: 0
 Remaining prints: 154
 Total capacity (current roll): 400
 Remaining percent: 38.5%
 Raw status code: 0
-Hinweise
-Nur im Leerlauf abfragen: Laut DNP kann ein Statusaufruf während eines aktiven Drucks das Gerät blockieren.
+```
 
-DLL nicht weitergeben: CspStat.dll ist Teil der DNP-Software. Bitte nutze die lokal installierte Version.
+## Hinweise
+**Nur im Leerlauf abfragen:** Laut DNP kann ein Statusaufruf während eines aktiven Drucks das Gerät blockieren.
 
-Fehlerbehebung:
+**DLL nicht weitergeben:** CspStat.dll ist Teil der DNP-Software. Bitte nutze die lokal installierte Version.
 
-WinError 193 → Python-Bitversion passt nicht zur DLL (32-bit installieren).
+## Fehlerbehebung:
 
-„Could not locate DS620“ → Drucker ist nicht verbunden, nicht bereit oder wird von einer anderen Software blockiert.
+- **WinError 193** → Python-Bitversion passt nicht zur DLL (32-bit installieren).
 
-Lizenz
-Dieses Beispielskript steht unter der MIT-Lizenz.
+- **„Could not locate DS620“** → Drucker ist nicht verbunden, nicht bereit oder wird von einer anderen Software blockiert.
+
+## Lizenz
+Dieses Beispielskript steht unter der [MIT-Lizenz](https://mit-license.org).
+
 Die Datei CspStat.dll ist nicht Teil dieses Repositories und bleibt Eigentum von DNP.
