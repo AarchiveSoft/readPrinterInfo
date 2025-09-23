@@ -17,7 +17,7 @@ SMTP_PORT = 587  # try 25 if 587 doesn’t work
 EMAIL_FROM = "noreply@graphicart.ch"
 EMAIL_TO = "a.hafner@graphicart.ch"
 
-LOW_THRESHOLD_PERCENT = 95.0
+LOW_THRESHOLD_PERCENT = 10.0
 
 # -----------------------
 # Spooler-side checks
