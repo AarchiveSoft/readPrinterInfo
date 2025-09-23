@@ -141,8 +141,8 @@ def check_remaining():
         pct = (remaining / total) * 100.0
         print(f"Remaining percent: {pct:.1f}%")
         if pct < LOW_THRESHOLD_PERCENT:
-            subject = f"DNP DS620 low paper warning ({pct:.1f}%)"
-            body = f"Drucker {PRINTER_NAME} hat nur noch {remaining} von {total} Prints verbleibend."
+            subject = f"DNP DS620 Papierstand niedrig ({pct:.1f}%)"
+            body = f"Drucker {PRINTER_NAME}: Papier fast leer – noch {remaining} von {total} Drucken übrig. Bitte bald Papier nachlegen."
             send_email(subject, body)
             print("Low-paper email sent.")
 
