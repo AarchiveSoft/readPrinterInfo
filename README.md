@@ -11,7 +11,13 @@ Das hier enthaltene Python-Skript zeigt, wie man diese DLL einbindet und die Wer
 
 ## Funktionsumfang
 
-Das Skript gibt unter anderem folgende Informationen aus:
+- Auslesen der Restdrucke (`GetMediaCounter`)  
+- Auslesen der Gesamtkapazität der Rolle (`GetInitialMediaCount`)  
+- Abfrage nur, wenn der Drucker **im Leerlauf** ist (Vermeidung von Problemen beim Drucken)  
+- Automatisierte Abfrage alle **5 Minuten**  
+- Versand einer **E-Mail-Benachrichtigung**, wenn weniger als (z.B.) 10 % der Rolle verbleiben  
+
+**Beispielausgabe:**
 
 ```
 Vendor port: 0
@@ -27,8 +33,8 @@ Damit lässt sich z. B. in einer Fotobox-Software frühzeitig reagieren, wenn da
 ## Voraussetzungen
 
 - **Windows-PC** mit angeschlossenem DNP DS620  
-- Installierte **DNP PrinterInfo-Software** (darin befindet sich die Datei `CspStat.dll`)
-  - [DNP PrinterInfo Download](https://dnpphoto.com/Portals/0/Resources/PrinterInfo_1.2.1.1.zip)
+- Installierte **DNP PrinterInfo-Software** (darin befindet sich die Datei `CspStat.dll`)  
+  - [DNP PrinterInfo Download](https://dnpphoto.com/Portals/0/Resources/PrinterInfo_1.2.1.1.zip)  
 - **Python** in der Bit-Version passend zur DLL  
   - Die DLL ist meist **32-bit**, daher bitte auch **32-bit-Python** installieren  
 
@@ -41,8 +47,7 @@ Damit lässt sich z. B. in einer Fotobox-Software frühzeitig reagieren, wenn da
    git clone https://github.com/AarchiveSoft/readPrinterInfo.git
    cd readPrinterInfo
    ```
-   
-2. **Virtuelle Umgebung erstellen** (32-bit Python)
+2. **Virtuelle Umgebung erstellen (32-bit Python)**
 
     ```powershell
     py -3.11-32 -m venv .venv32
@@ -55,41 +60,58 @@ Damit lässt sich z. B. in einer Fotobox-Software frühzeitig reagieren, wenn da
     pip install -r requirements.txt
     ```
 
+    *Enthalten sind u. a.:*
+
+    * pywin32 (Zugriff auf Windows-Druckerspooler)
+    * schedule (für den 5-Minuten-Timer)
+   
+   
 4. **DLL bereitstellen**
 
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Kopiere **CspStat.dll** aus deinem PrinterInfo-Installationsordner (z. B. **C:\DNPIA\PrinterInfo\CspStat.dll**)
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Lege die Datei in den Ordner ./data/ des Projekts
+    * Kopiere CspStat.dll aus deinem PrinterInfo-Installationsordner (z. B. C:\DNPIA\PrinterInfo\CspStat.dll)
+    * Lege die Datei in den Ordner ./data/ des Projekts
 
 ## Nutzung
+
+**Starte den Monitor mit:**
 
 ```powershell
 python .\main.py
 ```
+Das Skript überprüft alle _5 Minuten_ den Druckerstatus.
 
-**Erwartete Ausgabe** (Beispiel):
+* Ist der Drucker beschäftigt → wird die Abfrage übersprungen und beim nächsten Zyklus erneut geprüft.
+* Ist der Drucker frei → wird die DLL abgefragt und der Restbestand ermittelt.
+* Fällt der Restbestand unter 10 % → wird automatisch eine E-Mail an a.hafner@graphicart.ch gesendet.
 
-```
-Vendor port: 0
-Remaining prints: 154
-Total capacity (current roll): 400
-Remaining percent: 38.5%
-Raw status code: 0
-```
+## E-Mail-Versand
+
+Der E-Mail-Versand erfolgt über den SMTP-Relay-Server:
+
+_In diesem Beispiel:_  
+
+* **Absender:** noreply@graphicart.ch
+* **Empfänger:** a.hafner@graphicart.ch
+* **SMTP-Server:** smtp-relay.gmail.com (Port 587, STARTTLS)
+
+Falls dein Relay keine Authentifizierung benötigt (z. B. IP-Whitelist), kann das Skript ohne server.login() betrieben werden.  
+Ansonsten können Benutzername/Passwort in der main.py ergänzt werden.
 
 ## Hinweise
-**Nur im Leerlauf abfragen:** Laut DNP kann ein Statusaufruf während eines aktiven Drucks das Gerät blockieren.
 
-**DLL nicht weitergeben:** CspStat.dll ist Teil der DNP-Software. Bitte nutze die lokal installierte Version.
+**Nur im Leerlauf abfragen:**  
+    Laut DNP kann ein Statusaufruf während eines aktiven Drucks den Drucker blockieren.  
+    Die angepasste Version des Beispiel Scripts enthält einen Sicherheitscheck, um diesem Problem zu entgehen.
 
-## Fehlerbehebung:
+**DLL nicht weitergeben:**  
+    CspStat.dll ist Teil der DNP-Software. Bitte nutze die lokal installierte Version.
 
-- **WinError 193** → Python-Bitversion passt nicht zur DLL (32-bit installieren).
+## Fehlerbehebung
 
-- **„Could not locate DS620“** → Drucker ist nicht verbunden, nicht bereit oder wird von einer anderen Software blockiert.
+* WinError 193 → Python-Bitversion passt nicht zur DLL (32-bit installieren).
+* „Could not locate DS620“ → Drucker ist nicht verbunden, nicht bereit oder wird von einer anderen Software blockiert.
 
 ## Lizenz
-Dieses Beispielskript steht unter der [MIT-Lizenz](https://mit-license.org).
 
+Dieses Beispielskript steht unter der [MIT-Lizenz](https://mit-license.org).  
 Die Datei CspStat.dll ist nicht Teil dieses Repositories und bleibt Eigentum von DNP.
